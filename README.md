@@ -26,8 +26,13 @@ to your `README.md`.
 ## 📌&nbsp;&nbsp;Introduction
 
 ### Description
-TODO
+TODO blabla
 
+#### TODO
+
+- [ ] Save model in ONNX
+- [ ] Sampling code
+- [ ] Inference code
 <br>
 
 ## Project Structure
