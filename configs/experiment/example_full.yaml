@@ -27,19 +27,19 @@ trainer:
   # resume_from_checkpoint: ${work_dir}/last.ckpt
 
 model:
-  _target_: src.models.mnist_model.MNISTLitModel
+  _target_: src.models.deepforest_model.DeepForestLitModel
   lr: 0.001
   weight_decay: 0.00005
   input_size: 784
   lin1_size: 256
   lin2_size: 256
   lin3_size: 128
-  output_size: 10
+  output_size: 2
 
 datamodule:
-  _target_: src.datamodules.mnist_datamodule.MNISTDataModule
+  _target_: src.datamodules.deepforest_datamodule.DeepForestDataModule
   data_dir: ${data_dir}
-  batch_size: 64
+  batch_size: 4
   train_val_test_split: [55_000, 5_000, 10_000]
   num_workers: 0
   pin_memory: False

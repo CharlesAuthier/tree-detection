@@ -57,7 +57,7 @@ class DeepForestLitModel(LightningModule):
             "class_loss": logits["class_loss"],
             "box_loss": logits["box_loss"],
         }
-        preds = logits["detections"]
+        # preds = logits["detections"]
         return loss
 
     def training_step(self, batch: Any, batch_idx: int):
