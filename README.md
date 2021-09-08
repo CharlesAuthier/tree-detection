@@ -33,6 +33,7 @@ TODO blabla
 - [ ] Save model in ONNX
 - [ ] Sampling code
 - [ ] Inference code
+- [ ] Make notebook for example of run
 <br>
 
 ## Project Structure
