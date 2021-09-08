@@ -1,6 +1,8 @@
 from typing import List, Optional
 
 import hydra
+import torch
+from effdet import DetBenchPredict
 from omegaconf import DictConfig
 from pytorch_lightning import (
     Callback,
@@ -12,6 +14,9 @@ from pytorch_lightning import (
 from pytorch_lightning.loggers import LightningLoggerBase
 
 from src.utils import utils
+
+from effdet import get_efficientdet_config, EfficientDet
+from effdet.efficientdet import HeadNet
 
 log = utils.get_logger(__name__)
 
@@ -92,6 +97,13 @@ def train(config: DictConfig) -> Optional[float]:
         logger=logger,
     )
 
+    # Save the model in ONNX TODO ERROR and change place to be more polyvalant (now only effdet)
+    # filepath = "model.onnx"
+    # input_sample = torch.randn((1, 3, 256, 256))
+    # checkpoint_path = trainer.checkpoint_callback.best_model_path
+    # model = load_net(checkpoint_path, config.model)
+    # export_onnx_model(model, input_sample, filepath)
+
     # Print path to best checkpoint
     log.info(f"Best checkpoint path:\n{trainer.checkpoint_callback.best_model_path}")
 
@@ -99,3 +111,37 @@ def train(config: DictConfig) -> Optional[float]:
     optimized_metric = config.get("optimized_metric")
     if optimized_metric:
         return trainer.callback_metrics[optimized_metric]
+
+
+def load_net(checkpoint_path, cfg):
+    config = get_efficientdet_config(cfg.architecture)
+    config.update({'num_classes': cfg.num_classes})
+    config.update({'image_size': (cfg.input_size, cfg.input_size)})
+    net = EfficientDet(config, pretrained_backbone=False)
+    net.class_net = HeadNet(config, num_outputs=config.num_classes)
+
+    checkpoint = torch.load(checkpoint_path)['state_dict']
+    # create new OrderedDict that does not contain `module.`
+    from collections import OrderedDict
+    new_state_dict = OrderedDict()
+    for k, v in checkpoint.items():
+        # name = k[7:]  # remove `module.`
+        name = k.replace('model.', '')
+        new_state_dict[name] = v
+    new_state_dict = {k: v for k, v in new_state_dict.items() if 'anchors.boxes' not in k}
+
+    net.load_state_dict(new_state_dict)
+
+    net = DetBenchPredict(net)
+    net.eval()
+    return net
+
+
+def export_onnx_model(model, input_sample, onnx_path, input_names=None, output_names=None, dynamic_axes=None):
+    torch.onnx.export(
+        model, input_sample, onnx_path,
+        input_names=['img'], output_names=['output'],
+        export_params=True,
+        verbose=False,
+        opset_version=11
+    )

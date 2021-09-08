@@ -33,3 +33,10 @@ scikit-learn    # used in some callbacks
 seaborn         # used in some callbacks
 jupyterlab      # better jupyter notebooks
 pudb            # debugger
+effdet          # object detection models
+omegaconf
+torchmetrics
+matplotlib
+Pillow
+deepforest
+packaging

@@ -1,0 +1,7 @@
+_target_: src.models.deepforest_model.DeepForestLitModel
+
+architecture: 'efficientdet_d0'
+input_size: 256
+num_classes: 2
+lr: 0.001
+weight_decay: 0.0005
