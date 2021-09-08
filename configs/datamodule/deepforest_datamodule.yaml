@@ -1,0 +1,10 @@
+_target_: src.datamodules.deepforest_datamodule.DeepForestDataModule
+
+data_dir: ${data_dir} # data_dir is specified in config.yaml
+classes_dict: {'background': 0, 'tree': 1}
+img_size: 256
+img_overlap: 0.0
+batch_size: 4
+train_val_test_split: [75, 5, 20]
+num_workers: 0
+pin_memory: False
